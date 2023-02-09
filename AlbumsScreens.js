@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity, Alert, Modal, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity, Alert, Modal, Pressable, FlatList } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const AlbumScreen = ({ navigation }) => {
+const AlbumScreen = ({ route, navigation }) => {
+
+  const { data } = route.params;
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -12,20 +14,58 @@ const AlbumScreen = ({ navigation }) => {
     navigation.navigate('Album')
   }
 
+  const [isLoading, setLoading] = useState(true);
+  const [album, setAlbum] = useState([]);
+
+  const getAlbum = async () => {
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=` + user.id);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAlbum();
+  }, []);
+
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white', flexDirection: 'row' }}>
 
-      <View style={{ flex: 0.35, backgroundColor: 'orange', alignItems: 'center' }}>
+      <View style={{ flex: 0.35, alignItems: 'center', borderRightColor: 'grey', borderRightWidth: 1 }}>
 
-        <View style={{ height: 80, width: 80, backgroundColor: 'green', marginTop: 16 }}>
 
-        </View>
-        <Text style={styles.text2}>Album1</Text>
-        <Text style={styles.text}>21</Text>
+
+
+
+        <FlatList
+          data={data}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => {
+
+            return (
+              <>
+                <View style={{ height: 80, width: 80, backgroundColor: 'green', marginTop: 16 }}>
+
+                </View>
+                <Text style={styles.text2}>Album1</Text>
+                <Text style={styles.text}>50</Text>
+              </>
+
+            )
+          }}
+          numColumns={1}
+          keyExtractor={(item, index) => index.toString()}
+        />
 
       </View>
 
-      <View style={{ flex: 0.65, backgroundColor: 'green' }}>
+      <View style={{ flex: 0.65 }}>
         <View style={styles.mt10mb16ml16}>
           <Text style={styles.subHeading}>Album 1</Text>
         </View>
@@ -59,10 +99,11 @@ const AlbumScreen = ({ navigation }) => {
           setModalVisible(true)
         }}>
 
-          <View style={{ height: 80, width: 80, backgroundColor: 'orange', marginLeft: 16 }}>
+          <View style={{ height: 80, width: 80, marginLeft: 16, backgroundColor: 'pink' }}>
 
           </View>
         </TouchableOpacity>
+        
 
 
       </View>
@@ -134,8 +175,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    height: windowHeight*0.5,
-    width: windowWidth*0.8
+    height: windowHeight * 0.5,
+    width: windowWidth * 0.8
   },
 });
 

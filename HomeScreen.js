@@ -1,15 +1,38 @@
 
-import * as React from 'react';
-import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const HomeScreen = ({ navigation }) => {
 
-  const navigationHandler = () => {
-    navigation.navigate('User')
+  const navigationHandler = (user) => {
+    // console.log("NAVIGATING ....");
+    // console.log(user);
+    navigation.navigate('User', {
+      user: user,
+    })
   }
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  const getUsers = async () => {
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -24,31 +47,38 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.subHeading}>People</Text>
       </View>
 
-      <TouchableOpacity onPress={navigationHandler}>
+      <ScrollView style={{ marginBottom: windowHeight*0.12 }}>
+        <View>
+        { isLoading ? <Text>Loading...</Text> :  data.map((user) => {
+          return (
+            <TouchableOpacity onPress={() => navigationHandler(user)}>
 
-      <View>
-        <View style={styles.user}>
-          <Text style={styles.subHeading}>Abhishek Sharma</Text>
-          <Text style={styles.text}>Abhishek Sharma</Text>
-          <Text style={styles.text}>8076051467</Text>
-          <View
-            style={{
-              borderBottomColor: 'black',
-              borderBottomWidth: StyleSheet.hairlineWidth,
-              marginTop: 24,
-              marginBottom: 16
-            }}
-          />
+              <View>
+                <View style={styles.user}>
+                  <Text style={styles.subHeading}>{user.name}</Text>
+                  <Text style={styles.text}>{user.email}</Text>
+                  <Text style={styles.text}>{user.phone}</Text>
+                  <View
+                    style={{
+                      borderBottomColor: 'black',
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      marginTop: 24,
+                      marginBottom: 16
+                    }}
+                  />
 
-          <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.text}>Company</Text><Text style={styles.text}>16</Text>
-          </View>
+                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Text style={styles.text}>{user.company.name}</Text><Text style={styles.text}>16</Text>
+                  </View>
+                </View>
+              </View>
+
+            </TouchableOpacity>
+          );
+        })}
         </View>
-      </View>
-
-      </TouchableOpacity>
-
-    
+        
+      </ScrollView>
 
     </View>
   );
@@ -82,7 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 16,
     marginBottom: 16
-    
+
   },
 
   text: {

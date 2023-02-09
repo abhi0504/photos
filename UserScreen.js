@@ -1,15 +1,41 @@
 
-import * as React from 'react';
-import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, Dimensions, TouchableOpacity, FlatList, Image } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const UserScreen = ({ navigation }) => {
+const UserScreen = ({ route, navigation }) => {
 
+  const { user } = route.params;
 
   const navigationHandler = () => {
-    navigation.navigate('Album')
+    navigation.navigate('Album' , {
+      data: data
+    })
+  }
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+
+  const getUsers = async () => {
+    try {
+      const response = await fetch(`https://jsonplaceholder.typicode.com/albums?userId=` + user.id);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
+  function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
   }
 
   return (
@@ -18,22 +44,29 @@ const UserScreen = ({ navigation }) => {
         <Text style={styles.subHeading}>Albums</Text>
       </View>
 
-      <TouchableOpacity onPress={navigationHandler}>
-        <View style={{ height: 160, width: 160, backgroundColor: 'green', marginLeft: 16 }}>
-
-        </View>
-
-        <View style={{ marginLeft: 16 }}>
-          <Text style={styles.text2}>Album1</Text>
-          <Text style={styles.text}>21</Text>
-        </View>
-      </TouchableOpacity>
-
-
-
-
-
-
+      <FlatList
+        data={data}
+        renderItem={({ item }) => 
+        
+        {
+          let num = getRandomInt(3);
+          let img = './img' + num + '.png'
+          console.log(img);
+          return (
+          <TouchableOpacity style={{ marginBottom: 16 }} onPress={navigationHandler}>
+            <Image
+              style={styles.image}
+              source={require('./img0.png')}
+            />
+            <View style={{ marginLeft: 16, paddingBottom: 10 }}>
+              <Text style={styles.text2}>{item.title.length < 22 ? item.title : item.title.slice(0, 19) + "..."}</Text>
+              <Text style={styles.text}>21</Text>
+            </View>
+          </TouchableOpacity>
+        )}}
+        numColumns={2}
+        keyExtractor={(item, index) => index.toString()}
+      />
     </View>
   );
 }
@@ -80,6 +113,11 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     fontSize: 12,
     color: '#000000'
+  },
+  image: {
+    height: windowHeight * 0.24,
+    width: windowWidth * 0.5,
+    marginBottom: -16
   }
 });
 
