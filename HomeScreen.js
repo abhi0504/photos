@@ -12,6 +12,7 @@ const HomeScreen = ({ navigation }) => {
     // console.log(user);
     navigation.navigate('User', {
       user: user,
+      name: user.name
     })
   }
 
@@ -68,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
                   />
 
                   <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text style={styles.text}>{user.company.name}</Text><Text style={styles.text}>16</Text>
+                    <Text style={styles.text}>{user.company.name}</Text><Text style={styles.text}>10</Text>
                   </View>
                 </View>
               </View>

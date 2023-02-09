@@ -45,7 +45,7 @@ const UserScreen = ({ route, navigation }) => {
         <Text style={styles.subHeading}>Albums</Text>
       </View>
 
-      <FlatList
+      {isLoading ? <Text>Loading...</Text> : <FlatList
         data={data}
         renderItem={({ item }) => 
         
@@ -67,7 +67,9 @@ const UserScreen = ({ route, navigation }) => {
         )}}
         numColumns={2}
         keyExtractor={(item, index) => index.toString()}
-      />
+      /> }
+
+      
     </View>
   );
 }

@@ -12,6 +12,8 @@ const AlbumScreen = ({ route, navigation }) => {
 
   const [isLoading, setLoading] = useState(true);
   const [album, setAlbum] = useState([]);
+  const [uri, setUri] = useState();
+
 
   const getAlbum = async () => {
     try {
@@ -43,7 +45,7 @@ const AlbumScreen = ({ route, navigation }) => {
 
             return (
               <>
-                <View style={{ height: 80, width: 80, backgroundColor: 'green', marginTop: 16 }}>
+                <View style={{ height: 80, width: 80, backgroundColor: 'green', marginTop: 16, borderRadius: 5 }}>
 
                 </View>
                 <Text style={styles.text2}>{item.title.slice(0, 10) + "..."}</Text>
@@ -68,34 +70,36 @@ const AlbumScreen = ({ route, navigation }) => {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
+          style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
             setModalVisible(!modalVisible);
           }}>
           <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.subHeading}>Images</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-            </View>
-
+            <Image
+              style={styles.imageModal}
+              source={{
+                uri: uri,
+              }}
+            />
+                  <View style={{height: 30, width: 30, backgroundColor: 'white', borderRadius: 100, position: 'absolute', right: windowWidth*0.1, bottom: windowHeight*0.71, alignItems: 'center', justifyContent: 'center'}} >
+                    <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style={{color: '#000000'}}>X</Text>
+                    </TouchableOpacity>
+                  </View>
           </View>
         </Modal>
-        <FlatList
+
+              {isLoading ? <Text>Loading...</Text> : <FlatList
           data={album}
           showsVerticalScrollIndicator={false}
           style={{ marginLeft: 16 }}
           renderItem={({ item }) => {
 
-            console.log("LLLLLL");
-            console.log(item);
-
             return (
               <TouchableOpacity onPress={() => {
                 setModalVisible(true)
+                setUri(item.url)
               }}>
 
                 <View style={{ height: 100, width: 100, marginLeft: 4, marginBottom: 4 }}>
@@ -112,7 +116,9 @@ const AlbumScreen = ({ route, navigation }) => {
           }}
           numColumns={2}
           keyExtractor={(item, index) => index.toString()}
-        />
+        /> }
+
+        
 
 
 
@@ -169,7 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   modalView: {
     margin: 20,
@@ -191,6 +197,11 @@ const styles = StyleSheet.create({
   image: {
     height: windowHeight * 0.128,
     width: windowWidth * 0.255,
+  },
+  imageModal: {
+    height: windowHeight * 0.5,
+    width: windowWidth * 0.755,
+    borderRadius: 16
   }
 });
 
