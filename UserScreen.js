@@ -9,9 +9,10 @@ const UserScreen = ({ route, navigation }) => {
 
   const { user } = route.params;
 
-  const navigationHandler = () => {
+  const navigationHandler = (id) => {
     navigation.navigate('Album' , {
-      data: data
+      data: data,
+      id: id
     })
   }
 
@@ -53,7 +54,7 @@ const UserScreen = ({ route, navigation }) => {
           let img = './img' + num + '.png'
           console.log(img);
           return (
-          <TouchableOpacity style={{ marginBottom: 16 }} onPress={navigationHandler}>
+          <TouchableOpacity style={{ marginBottom: 16 }} onPress={() => navigationHandler(item.id)}>
             <Image
               style={styles.image}
               source={require('./img0.png')}
